@@ -17,7 +17,7 @@ RUN \
 
 # Set our working directory inside the image
 WORKDIR $RAILS_ROOT
-EXPOSE 3000
+EXPOSE 8080
 CMD ["start.sh"]
 
 COPY Gemfile Gemfile
