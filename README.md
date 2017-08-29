@@ -1,2 +1,5 @@
-# example_dockerfiles
-A collection of Dockerfiles for AbarCloud
+# Example Dockerfiles
+
+A collection of Dockerfiles for deployment on AbarCloud.
+
+Issues and Pull Requests welcome!
