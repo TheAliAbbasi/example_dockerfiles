@@ -1,67 +1,58 @@
-FROM nginx:1.11
+FROM alpine:3.6
 
-RUN echo 'deb http://packages.dotdeb.org jessie all' >> /etc/apt/sources.list && \
-    echo 'deb-src http://packages.dotdeb.org jessie all' >> /etc/apt/sources.list && \
-    apt-get update -y && \
-    apt-get install -y apt-transport-https lsb-release ca-certificates wget curl && \
-    wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg && \
-    echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list && \
-    wget https://www.dotdeb.org/dotdeb.gpg && apt-key add dotdeb.gpg && \
-    # Add any other required packages here, e.g. php7.0-memcached
-    apt-get update && apt-get install -y --force-yes git curl php7.1-fpm php7.1-cli \
-            php7.1-common php7.1-mbstring php7.1-xml php7.1-bcmath \
-            mcrypt php7.1-mcrypt php7.1-curl gzip php7.1-mysql zip unzip php7.1-zip && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+ENV TIMEZONE=Asia/Tehran
+# You can find the php7 packages here: http://dl-cdn.alpinelinux.org/alpine/v3.6/community/x86_64/
+ENV ADDITIONAL_PACKAGES="php7-bcmath php7-dom php7-tokenizer php7-pdo"
+ENV PHP_MEMORY_LIMIT=128M
+ENV PHP_UPLOAD_MAX_SILE_SIZE=50M
+ENV PHP_POST_MAX_SIZE=50M
+
+RUN apk update && \
+    # Install required packages
+    apk add tzdata curl bash ca-certificates supervisor nginx \
+            php7 php7-fpm php7-common php7-openssl php7-json php7-phar php7-mbstring php7-iconv php7-zlib ${ADDITIONAL_PACKAGES} && \
+    # Install composer
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/bin/composer && \
-    # PHP-FPM settings
-    sed -i "/user  nginx;/c user  root;"                           /etc/nginx/nginx.conf && \
-    sed -i "/memory_limit = /c memory_limit = 128M"                /etc/php/7.1/fpm/php.ini && \
-    sed -i "/max_execution_time = /c max_execution_time = 300"     /etc/php/7.1/fpm/php.ini && \
-    sed -i "/upload_max_filesize = /c upload_max_filesize = 50M"   /etc/php/7.1/fpm/php.ini && \
-    sed -i "/post_max_size = /c post_max_size = 50M"               /etc/php/7.1/fpm/php.ini && \
-    sed -i "/user = /c user = root"                                /etc/php/7.1/fpm/pool.d/www.conf && \
-    sed -i "/;listen.mode = /c listen.mode = 0666"                 /etc/php/7.1/fpm/pool.d/www.conf && \
-    sed -i "/listen.owner = /c listen.owner = root"                /etc/php/7.1/fpm/pool.d/www.conf && \
-    sed -i "/listen.group = /c listen.group = root"                /etc/php/7.1/fpm/pool.d/www.conf && \
-    sed -i "/listen = /c listen = 127.0.0.1:9000"                  /etc/php/7.1/fpm/pool.d/www.conf && \
-    sed -i "/;clear_env = /c clear_env = no"                       /etc/php/7.1/fpm/pool.d/www.conf && \
+    # Set the timezone
+    cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
+    echo "${TIMEZONE}" > /etc/timezone && \
+    # Set the nginx config
+    sed -i "/user nginx;/c #user nginx;" /etc/nginx/nginx.conf && \
+    # Set php.ini config
+    sed -i "/date.timezone =/c date.timezone = ${TIMEZONE}"                              /etc/php7/php.ini && \
+    sed -i "/memory_limit = /c memory_limit = ${PHP_MEMORY_LIMIT}"                       /etc/php7/php.ini && \
+    sed -i "/upload_max_filesize = /c upload_max_filesize = ${PHP_UPLOAD_MAX_SILE_SIZE}" /etc/php7/php.ini && \
+    sed -i "/post_max_size = /c post_max_size = ${PHP_POST_MAX_SIZE}"                    /etc/php7/php.ini && \
+    # Set www conf
+    sed -i "/listen.owner = /c listen.owner = root" /etc/php7/php-fpm.d/www.conf && \
+    sed -i "/listen = /c listen = 127.0.0.1:9000"   /etc/php7/php-fpm.d/www.conf && \
+    # Setup permissions
+    mkdir -p /.composer /.config /run/nginx /var/lib/nginx/logs && \
+    chmod -R g+rws,a+rx /.composer /.config /var/log /var/run /var/tmp /run/nginx /var/lib/nginx && \
+    chown -R 1001:0     /.composer /.config /var/log /var/run /var/tmp /run/nginx /var/lib/nginx && \
     # Log aggregation
     ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log && \
-    ln -sf /dev/stdout /var/log/php7.1-fpm.log && \
-    # Setup permissions
-    mkdir /.composer /run/php && \
-    chmod -R g+ws /run/php /var/run /etc/nginx/conf.d /var/cache/nginx /var/log /.composer && \
-    chown -R 1001:0 /run/php /var/run /etc/nginx/conf.d /var/cache/nginx /var/log /.composer
+    # Clean up packagess
+    apk del tzdata && \
+    rm -rf /var/cache/apk/*
 
 EXPOSE 8080
-
-ENTRYPOINT ["/bin/sh", "/entrypoint.sh"]
-CMD ["/start.sh"]
-
-ENV TZ=Asia/Tehran
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
-    echo $TZ > /etc/timezone && \
-    sed -i "/;date.timezone =/c date.timezone = Asia/Tehran;" /etc/php/7.1/fpm/php.ini && \
-    sed -i "/;date.timezone =/c date.timezone = Asia/Tehran;" /etc/php/7.1/cli/php.ini
-
-COPY ./site.conf /etc/nginx/conf.d/default.conf
-COPY ./start.sh ./entrypoint.sh /
-RUN chmod +x start.sh entrypoint.sh
-
+CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 WORKDIR /var/www
 
-# Install dependency
-COPY composer.json ./
+COPY supervisord.conf /
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY composer.json composer.lock ./
 RUN composer install --no-scripts --no-autoloader --prefer-dist --no-dev --working-dir=/var/www
 
 # Copy the app files
 COPY . /tmp/app
-RUN chmod -R ug+rwx /tmp/app && \
+RUN chmod -R g+w /tmp/app && \
     chown -R 1001:0 /tmp/app && \
-    cp -rpT /tmp/app /var/www && \
+    cp -a /tmp/app/. /var/www && \
     rm -rf /tmp/app && \
     composer dump-autoload --optimize
+
 USER 1001
