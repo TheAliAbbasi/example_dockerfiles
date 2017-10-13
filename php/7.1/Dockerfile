@@ -1,6 +1,6 @@
 FROM alpine:3.6
 
-ENV TIMEZONE=Asia/Tehran
+ENV TZ=Asia/Tehran
 # You can find the php7 packages here: http://dl-cdn.alpinelinux.org/alpine/v3.6/community/x86_64/
 ENV ADDITIONAL_PACKAGES="php7-bcmath php7-dom php7-tokenizer php7-pdo"
 ENV PHP_MEMORY_LIMIT=128M
@@ -15,12 +15,12 @@ RUN apk update && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/bin/composer && \
     # Set the timezone
-    cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
-    echo "${TIMEZONE}" > /etc/timezone && \
+    cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
+    echo "${TZ}" > /etc/timezone && \
     # Set the nginx config
     sed -i "/user nginx;/c #user nginx;" /etc/nginx/nginx.conf && \
     # Set php.ini config
-    sed -i "/date.timezone =/c date.timezone = ${TIMEZONE}"                              /etc/php7/php.ini && \
+    sed -i "/date.timezone =/c date.timezone = ${TZ}"                                    /etc/php7/php.ini && \
     sed -i "/memory_limit = /c memory_limit = ${PHP_MEMORY_LIMIT}"                       /etc/php7/php.ini && \
     sed -i "/upload_max_filesize = /c upload_max_filesize = ${PHP_UPLOAD_MAX_SILE_SIZE}" /etc/php7/php.ini && \
     sed -i "/post_max_size = /c post_max_size = ${PHP_POST_MAX_SIZE}"                    /etc/php7/php.ini && \
@@ -34,12 +34,11 @@ RUN apk update && \
     # Log aggregation
     ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log && \
-    # Clean up packagess
+    # Clean up packages
     apk del tzdata && \
     rm -rf /var/cache/apk/*
 
 EXPOSE 8080
-CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 WORKDIR /var/www
 
 COPY supervisord.conf /
@@ -55,4 +54,5 @@ RUN chmod -R g+w /tmp/app && \
     rm -rf /tmp/app && \
     composer dump-autoload --optimize
 
+CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 USER 1001
