@@ -2,7 +2,7 @@ FROM alpine:3.6
 
 ENV TZ=Asia/Tehran
 # You can find the php7 packages here: http://dl-cdn.alpinelinux.org/alpine/v3.6/community/x86_64/
-ENV ADDITIONAL_PACKAGES="php7-bcmath php7-dom php7-tokenizer php7-pdo"
+ENV ADDITIONAL_PACKAGES="php7-bcmath php7-dom php7-tokenizer php7-pdo php7-pdo_mysql"
 ENV PHP_MEMORY_LIMIT=128M
 ENV PHP_UPLOAD_MAX_SILE_SIZE=50M
 ENV PHP_POST_MAX_SIZE=50M
