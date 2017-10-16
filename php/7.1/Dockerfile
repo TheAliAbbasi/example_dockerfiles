@@ -1,8 +1,11 @@
 FROM alpine:3.6
 
+# Laravel users: Don't put `php artisan config:cache` in the Dockerfile as it
+# prevents the app from reading ENV vars at runtime.
+
 ENV TZ=Asia/Tehran
 # You can find the php7 packages here: http://dl-cdn.alpinelinux.org/alpine/v3.6/community/x86_64/
-ENV ADDITIONAL_PACKAGES="php7-bcmath php7-dom php7-tokenizer php7-pdo php7-pdo_mysql"
+ENV ADDITIONAL_PACKAGES="php7-pdo_pgsql php7-pdo_mysql php7-redis"
 ENV PHP_MEMORY_LIMIT=128M
 ENV PHP_UPLOAD_MAX_SILE_SIZE=50M
 ENV PHP_POST_MAX_SIZE=50M
@@ -10,7 +13,9 @@ ENV PHP_POST_MAX_SIZE=50M
 RUN apk update && \
     # Install required packages
     apk add tzdata curl bash ca-certificates supervisor nginx \
-            php7 php7-fpm php7-common php7-openssl php7-json php7-phar php7-mbstring php7-iconv php7-zlib ${ADDITIONAL_PACKAGES} && \
+            php7 php7-fpm php7-common php7-openssl php7-session php7-bcmath \
+            php7-dom php7-tokenizer php7-pdo php7-json php7-phar php7-mbstring \
+            php7-iconv php7-zlib php7-ctype php7-xml ${ADDITIONAL_PACKAGES} && \
     # Install composer
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/bin/composer && \
@@ -27,6 +32,7 @@ RUN apk update && \
     # Set www conf
     sed -i "/listen.owner = /c listen.owner = root" /etc/php7/php-fpm.d/www.conf && \
     sed -i "/listen = /c listen = 127.0.0.1:9000"   /etc/php7/php-fpm.d/www.conf && \
+    sed -i "/;clear_env = /c clear_env = no"        /etc/php7/php-fpm.d/www.conf && \
     # Setup permissions
     mkdir -p /.composer /.config /run/nginx /var/lib/nginx/logs && \
     chmod -R g+rws,a+rx /.composer /.config /var/log /var/run /var/tmp /run/nginx /var/lib/nginx && \
@@ -52,7 +58,8 @@ RUN chmod -R g+w /tmp/app && \
     chown -R 1001:0 /tmp/app && \
     cp -a /tmp/app/. /var/www && \
     rm -rf /tmp/app && \
-    composer dump-autoload --optimize
+    composer dump-autoload --optimize && \
+    chmod +x /var/www/start.sh
 
-CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
+CMD ["/var/www/start.sh"]
 USER 1001
