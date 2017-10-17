@@ -1,15 +1,15 @@
 FROM alpine:3.6
 
-ENV RAILS_ROOT=/usr/src/app
-ENV HOME=$RAILS_ROOT
-ENV TZ=Asia/Tehran
-# To decrease the size of the Dockerfile only install the DB packages you need
-ENV DB_PACKAGES="sqlite-dev postgresql-dev mysql-dev"
+ENV RAILS_ROOT=/usr/src/app \
+    HOME=$RAILS_ROOT \
+    TZ=Asia/Tehran \
+    # To decrease the size of the Dockerfile only install the DB packages you need
+    DB_PACKAGES="sqlite-dev postgresql-dev mysql-dev"
 
 RUN apk update && \
     # Install required packages
-    apk add tzdata curl bash ca-certificates rsync supervisor \
-            nginx build-base yarn libffi-dev libxml2-dev libxslt-dev nodejs $DB_PACKAGES \
+    apk add tzdata curl bash ca-certificates rsync supervisor nginx \
+            build-base yarn libffi-dev libxml2-dev libxslt-dev nodejs $DB_PACKAGES \
             ruby ruby-dev ruby-bundler ruby-irb ruby-json ruby-bigdecimal ruby-nokogiri && \
     # Set the timezone
     cp /usr/share/zoneinfo/${TZ} /etc/localtime && \

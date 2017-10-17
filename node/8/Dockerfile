@@ -4,7 +4,8 @@ ENV TZ=Asia/Tehran
 
 RUN apk update && \
     # Set the timezone
-    apk add bash curl tzdata python python-dev py-pip build-base libpng-dev autoconf automake nasm libtool && \
+    apk add tzdata curl bash ca-certificates rsync \
+            python python-dev py-pip build-base libpng-dev autoconf automake nasm libtool && \
     cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo "${TZ}" > /etc/timezone && \
     # Install pm2

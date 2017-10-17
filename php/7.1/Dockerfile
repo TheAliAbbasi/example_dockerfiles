@@ -3,16 +3,16 @@ FROM alpine:3.6
 # Laravel users: Don't put `php artisan config:cache` in the Dockerfile as it
 # prevents the app from reading ENV vars at runtime.
 
-ENV TZ=Asia/Tehran
-# You can find the php7 packages here: http://dl-cdn.alpinelinux.org/alpine/v3.6/community/x86_64/
-ENV ADDITIONAL_PACKAGES="php7-pdo_pgsql php7-pdo_mysql php7-redis"
-ENV PHP_MEMORY_LIMIT=128M
-ENV PHP_UPLOAD_MAX_SILE_SIZE=50M
-ENV PHP_POST_MAX_SIZE=50M
+ENV TZ=Asia/Tehran \
+    # You can find the php7 packages here: http://dl-cdn.alpinelinux.org/alpine/v3.6/community/x86_64/
+    ADDITIONAL_PACKAGES="php7-pdo_pgsql php7-pdo_mysql php7-redis" \
+    PHP_MEMORY_LIMIT=128M \
+    PHP_UPLOAD_MAX_SILE_SIZE=50M \
+    PHP_POST_MAX_SIZE=50M \
 
 RUN apk update && \
     # Install required packages
-    apk add tzdata curl bash ca-certificates supervisor nginx \
+    apk add tzdata curl bash ca-certificates rsync supervisor nginx \
             php7 php7-fpm php7-common php7-openssl php7-session php7-bcmath \
             php7-dom php7-tokenizer php7-pdo php7-json php7-phar php7-mbstring \
             php7-iconv php7-zlib php7-ctype php7-xml ${ADDITIONAL_PACKAGES} && \
