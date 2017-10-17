@@ -4,7 +4,7 @@ ENV TZ=Asia/Tehran
 
 RUN apk update && \
     # Set the timezone
-    apk add bash curl tzdata && \
+    apk add bash curl tzdata python python-dev py-pip build-base libpng-dev autoconf automake nasm libtool && \
     cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo "${TZ}" > /etc/timezone && \
     # Install pm2
@@ -17,7 +17,7 @@ RUN apk update && \
 EXPOSE 3000
 
 # Create app directory
-RUN mkdir -p /usr/src/app
+RUN mkdir -p /usr/src/app /.config
 WORKDIR /usr/src/app
 
 # Install app dependencies
@@ -27,7 +27,7 @@ RUN npm install
 
 # Bundle app source
 COPY . /tmp/app
-RUN chmod -R g+w /tmp/app && \
+RUN chmod -R g+w /tmp/app /.config && \
     cp -a /tmp/app/. /usr/src/app && \
     rm -rf /tmp/app
 
