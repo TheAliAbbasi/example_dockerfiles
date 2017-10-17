@@ -61,5 +61,5 @@ RUN chmod -R g+w /tmp/app && \
     composer dump-autoload --optimize && \
     chmod +x /var/www/start.sh
 
-CMD ["/var/www/start.sh"]
+CMD ["./start.sh"]
 USER 1001

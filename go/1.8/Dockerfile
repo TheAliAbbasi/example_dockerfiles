@@ -33,5 +33,5 @@ RUN apk update && \
 
 WORKDIR /gopath/bin
 
-# Update the next 2 lines
 CMD ["/gopath/bin/$GO_BINARY"]
+USER 1001

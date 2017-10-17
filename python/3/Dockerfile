@@ -26,7 +26,6 @@ RUN apk update && \
 
 WORKDIR /usr/src/app
 EXPOSE 8080
-CMD ["./start.sh"]
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY supervisord.conf /
@@ -40,4 +39,5 @@ RUN chmod -R g+w /tmp/app && \
     rm -rf /tmp/app && \
     chmod +x start.sh
 
+CMD ["./start.sh"]
 USER 1001

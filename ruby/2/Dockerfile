@@ -27,7 +27,6 @@ RUN apk update && \
 
 WORKDIR /usr/src/app
 EXPOSE 8080
-CMD ["./start.sh"]
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY Gemfile Gemfile.lock ./
@@ -44,4 +43,5 @@ RUN chmod -R g+w /tmp/app && \
     bundle exec rake assets:precompile && \
     mkdir -p log && chmod -R g+ws log && chown -R 1001:0 log
 
+CMD ["./start.sh"]
 USER 1001
