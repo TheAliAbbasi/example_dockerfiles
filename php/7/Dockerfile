@@ -8,7 +8,7 @@ ENV TZ=Asia/Tehran \
     ADDITIONAL_PACKAGES="php7-pdo_pgsql php7-pdo_mysql php7-redis" \
     PHP_MEMORY_LIMIT=128M \
     PHP_UPLOAD_MAX_SILE_SIZE=50M \
-    PHP_POST_MAX_SIZE=50M \
+    PHP_POST_MAX_SIZE=50M
 
 RUN apk update && \
     # Install required packages
