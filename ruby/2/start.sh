@@ -5,10 +5,10 @@ if [ "$ENTRYPOINT" = "workers" ]
 then
   echo Starting workers
   exec bundle exec sidekiq
-elif [ "$ENTRYPOINT" = "web" ]
+elif [ -z "$ENTRYPOINT" ] || "$ENTRYPOINT" = "web" ]
 then
   echo Starting web
-  exec bundle exec puma -C puma.rb
+  /usr/bin/supervisord -c /supervisord.conf
 else
-  echo Error, cannot find entrypoint to start
+  echo Error, cannot find entrypoint $ENTRYPOINT to start
 fi

@@ -1,41 +1,47 @@
-FROM ruby:2.4-slim
+FROM alpine:3.6
 
-# Define where our application will live inside the image, and home for bundler
-ENV RAILS_ROOT=/var/www/app HOME=$RAILS_ROOT TZ=Asia/Tehran
+ENV RAILS_ROOT=/usr/src/app
+ENV HOME=$RAILS_ROOT
+ENV TZ=Asia/Tehran
+# To decrease the size of the Dockerfile only install the DB packages you need
+ENV DB_PACKAGES="sqlite-dev postgresql-dev mysql-dev"
 
-RUN \
-  # Install essential Linux packages
-  apt-get update -qq && apt-get install -y build-essential libpq-dev postgresql-client ruby-dev & \
-  # Install SQLITE for test
-  apt-get install libsqlite3-dev & \
-  # For a JS runtime
-  apt-get install -y nodejs & \
-  # Set timezone
-  ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
-  # Create application home and the pids dir at the same time (-p)
-  mkdir -p $RAILS_ROOT/tmp/pids
+RUN apk update && \
+    # Install required packages
+    apk add tzdata curl bash ca-certificates rsync supervisor \
+            nginx build-base yarn libffi-dev libxml2-dev libxslt-dev nodejs $DB_PACKAGES \
+            ruby ruby-dev ruby-bundler ruby-irb ruby-json ruby-bigdecimal ruby-nokogiri && \
+    # Set the timezone
+    cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
+    echo "${TZ}" > /etc/timezone && \
+    # Setup permissions
+    mkdir -p /run/nginx /var/lib/nginx/logs && \
+    chmod -R g+rws,a+rx /var/log /var/run /var/tmp /run/nginx /var/lib/nginx && \
+    chown -R 1001:0     /var/log /var/run /var/tmp /run/nginx /var/lib/nginx && \
+    # Log aggregation
+    ln -sf /dev/stdout /var/log/nginx/access.log && \
+    ln -sf /dev/stderr /var/log/nginx/error.log && \
+    # Clean up packages
+    # apk del tzdata && \
+    rm -rf /var/cache/apk/*
 
-# Set our working directory inside the image
-WORKDIR $RAILS_ROOT
+WORKDIR /usr/src/app
 EXPOSE 8080
-CMD ["start.sh"]
+CMD ["./start.sh"]
 
-COPY Gemfile Gemfile
-COPY Gemfile.lock Gemfile.lock
-# Prevent bundler warnings; ensure that the bundler version executed is >= that which created Gemfile.lock
-RUN gem install bundler
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY Gemfile Gemfile.lock ./
+COPY supervisord.conf /
+# Use system-libraries for nokogiri so it installs faster
+RUN bundle config build.nokogiri --use-system-libraries && bundle install --without test development
 
-# Finish establishing our Ruby env
-RUN bundle install
-
-# Copy the Rails application into place and fix permissions
 COPY . /tmp/app
-RUN chmod -R ug+rwx /tmp/app $RAILS_ROOT/tmp $RAILS_ROOT/log && \
-    chown -R 1001:0 /tmp/app $RAILS_ROOT/tmp $RAILS_ROOT/log && \
-    cp -rpT /tmp/app . && \
-    rm -rf /tmp/app
-
-# Precompile assets
-RUN rake assets:precompile
+RUN chmod -R g+w /tmp/app && \
+    chown -R 1001:0 /tmp/app && \
+    cp -a /tmp/app/. . && \
+    rm -rf /tmp/app && \
+    chmod +x start.sh && \
+    bundle exec rake assets:precompile && \
+    mkdir -p log && chmod -R g+ws log && chown -R 1001:0 log
 
 USER 1001
