@@ -12,8 +12,11 @@ elif [ "$ENTRYPOINT" = "schedule_run" ]; then
     sleep 60
   done
 
-else
+elif [ -z "$ENTRYPOINT" ] || "$ENTRYPOINT" = "web" ]
+then
   echo Starting web
   /usr/bin/supervisord -c /supervisord.conf
 
+else
+  echo Error, cannot find entrypoint $ENTRYPOINT to start
 fi
