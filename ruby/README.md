@@ -1,3 +1,9 @@
 # Ruby
 
-We recommend deploying Ruby with Puma for best performance. The setup assumes that port 8080 is being used by Puma. See `start.sh` on how the `ENTRYPOINT=web` env variable can be used to start Puma; this can be set to `workers` to start background workers such as Sidekiq or DelayedJob.
+The Ruby Dockerfile is based on alpine to reduce its image size.
+
+It included puma and nginx and runs them in a single container using supervisord.
+
+A basic nginx configuration is provided, we recommend you edit it as required, e.g. to add make NGINX serve and cache static assets.
+
+It also includes a sample of how to run multiple entrypoints for workers from the same image. To customize this you will need to edit the `start.sh` script.
