@@ -4,14 +4,14 @@ FROM alpine:3.6
 # prevents the app from reading ENV vars at runtime.
 
 ENV TZ=Asia/Tehran \
-    # You can find the php5 packages here: http://dl-cdn.alpinelinux.org/alpine/v3.5/community/x86_64/
+    # You can find the php5 packages here: http://dl-cdn.alpinelinux.org/alpine/v3.6/community/x86_64/
     ADDITIONAL_PACKAGES="php5-pdo_pgsql php5-pdo_mysql" \
     PHP_MEMORY_LIMIT=128M \
     PHP_UPLOAD_MAX_SILE_SIZE=50M \
     PHP_POST_MAX_SIZE=50M
 
 RUN apk update && \
-    # Install required packages
+    # Install required packages - you can find any additional packages here: https://pkgs.alpinelinux.org/packages
     apk add tzdata curl bash ca-certificates rsync supervisor nginx \
             php5 php5-fpm php5-common php5-openssl php5-bcmath \
             php5-dom php5-cli php5-pdo php5-json php5-phar \

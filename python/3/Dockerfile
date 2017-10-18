@@ -3,7 +3,7 @@ FROM alpine:3.6
 ENV TZ=Asia/Tehran
 
 RUN apk update && \
-    # Install required packages
+    # Install required packages - you can find any additional packages here: https://pkgs.alpinelinux.org/packages
     apk add tzdata curl bash ca-certificates rsync supervisor nginx \
             python3 uwsgi-python3 && \
     # Set the timezone

@@ -11,7 +11,7 @@ ENV TZ=Asia/Tehran \
     PHP_POST_MAX_SIZE=50M
 
 RUN apk update && \
-    # Install required packages
+    # Install required packages - you can find any additional packages here: https://pkgs.alpinelinux.org/packages
     apk add tzdata curl bash ca-certificates rsync supervisor nginx \
             php7 php7-fpm php7-common php7-openssl php7-session php7-bcmath \
             php7-dom php7-tokenizer php7-pdo php7-json php7-phar php7-mbstring \

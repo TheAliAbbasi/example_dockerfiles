@@ -7,7 +7,7 @@ ENV RAILS_ROOT=/usr/src/app \
     DB_PACKAGES="sqlite-dev postgresql-dev mysql-dev"
 
 RUN apk update && \
-    # Install required packages
+    # Install required packages - you can find any additional packages here: https://pkgs.alpinelinux.org/packages
     apk add tzdata curl bash ca-certificates rsync supervisor nginx \
             build-base yarn libffi-dev libxml2-dev libxslt-dev nodejs $DB_PACKAGES \
             ruby ruby-dev ruby-bundler ruby-irb ruby-json ruby-bigdecimal ruby-nokogiri && \
@@ -22,7 +22,6 @@ RUN apk update && \
     ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log && \
     # Clean up packages
-    # apk del tzdata && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /usr/src/app

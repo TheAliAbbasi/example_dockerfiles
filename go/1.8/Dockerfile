@@ -9,8 +9,9 @@ ENV TZ=Asia/Tehran \
     GO_ADDITIONAL_BINARIES="ANOTHER_BINARY_1 ANOTHER_BINARY_2"
 
 RUN apk update && \
-    # Set the timezone
+    # Install required packages - you can find any additional packages here: https://pkgs.alpinelinux.org/packages
     apk add tzdata curl bash ca-certificates rsync && \
+    # Set the timezone
     cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo "${TZ}" > /etc/timezone && \
     # Clean up packages
@@ -21,7 +22,7 @@ WORKDIR $GO_SOURCE_PATH
 
 COPY . .
 
-# You can lock the Go version to any version you need below
+# Install tools for building the application and build the application
 RUN apk update && \
     apk add --virtual .build-deps git 'go<1.9' libc-dev make && \
     make build && \
