@@ -3,8 +3,9 @@ FROM alpine:3.6
 ENV TZ=Asia/Tehran
 
 RUN apk update && \
-    # Install required packages
-    apk add tzdata curl bash ca-certificates supervisor nginx python3 uwsgi-python3 && \
+    # Install required packages - you can find any additional packages here: https://pkgs.alpinelinux.org/packages
+    apk add tzdata curl bash ca-certificates rsync supervisor nginx \
+            python3 uwsgi-python3 && \
     # Set the timezone
     cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo "${TZ}" > /etc/timezone && \
@@ -25,14 +26,11 @@ RUN apk update && \
 
 WORKDIR /usr/src/app
 EXPOSE 8080
-CMD ["./start.sh"]
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY start.sh requirements.txt ./
 COPY supervisord.conf /
-RUN pip install --no-cache-dir -r requirements.txt && \
-    ln -sf /dev/stdout /var/log/nginx/access.log && \
-    ln -sf /dev/stderr /var/log/nginx/error.log
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /tmp/app
 RUN chmod -R g+w /tmp/app && \
@@ -41,4 +39,5 @@ RUN chmod -R g+w /tmp/app && \
     rm -rf /tmp/app && \
     chmod +x start.sh
 
+CMD ["./start.sh"]
 USER 1001

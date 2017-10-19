@@ -1,5 +1,9 @@
 # Python
 
-We recommend deploying Python with uWSGI and NGINX for best performance. A basic NGINX configuration is provided, we recommend you edit it as required, e.g. to add make NGINX serve and cache static assets.
+The Python Dockerfile is based on alpine to reduce its image size.
 
-The setup assumes that the Python app is listening on port 9000. See `start.sh` on how the `ENTRYPOINT=web` env variable can be used to start uWSGI+NGINX; this can be set to `workers` to start Celery.
+It included uWSGI and nginx and runs them in a single container using supervisord.
+
+A basic nginx configuration is provided, we recommend you edit it as required, e.g. to add make NGINX serve and cache static assets.
+
+It also includes a sample of how to run multiple entrypoints for workers from the same image. To customize this you will need to edit the `start.sh` script.

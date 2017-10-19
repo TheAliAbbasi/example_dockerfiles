@@ -1,10 +1,15 @@
 FROM node:8-alpine
 
-ENV TZ=Asia/Tehran
+ENV TZ=Asia/Tehran \
+    # If you use Babel, Babel cache won't be useful with Docker as containers do not keep their state
+    # (generating a cache on container start increases the start time).
+    BABEL_DISABLE_CACHE=1
 
 RUN apk update && \
+    # Install required packages - you can find any additional packages here: https://pkgs.alpinelinux.org/packages
+    apk add tzdata curl bash ca-certificates rsync \
+            python python-dev py-pip build-base libpng-dev autoconf automake nasm libtool && \
     # Set the timezone
-    apk add bash curl tzdata python python-dev py-pip build-base libpng-dev autoconf automake nasm libtool && \
     cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo "${TZ}" > /etc/timezone && \
     # Install pm2
