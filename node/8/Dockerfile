@@ -16,7 +16,6 @@ RUN apk update && \
     npm install pm2 -g && \
     mkdir /.pm2 && chmod -R g+w /.pm2 && chown 1001:0 /.pm2 && \
     # Clean up packages
-    apk del tzdata && \
     rm -rf /var/cache/apk/*
 
 EXPOSE 3000

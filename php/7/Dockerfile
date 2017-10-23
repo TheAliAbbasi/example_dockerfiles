@@ -41,7 +41,6 @@ RUN apk update && \
     ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log && \
     # Clean up packages
-    apk del tzdata && \
     rm -rf /var/cache/apk/*
 
 EXPOSE 8080

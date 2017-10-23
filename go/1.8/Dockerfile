@@ -15,7 +15,6 @@ RUN apk update && \
     cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo "${TZ}" > /etc/timezone && \
     # Clean up packages
-    apk del tzdata && \
     rm -rf /var/cache/apk/*
 
 WORKDIR $GO_SOURCE_PATH
