@@ -35,8 +35,8 @@ RUN apk update && \
     sed -i "/;clear_env = /c clear_env = no"        /etc/php7/php-fpm.d/www.conf && \
     # Setup permissions
     mkdir -p /.composer /.config /run/nginx /var/lib/nginx/logs && \
-    chmod -R g+rws,a+rx /.composer /.config /var/log /var/run /var/tmp /run/nginx /var/lib/nginx && \
-    chown -R 1001:0     /.composer /.config /var/log /var/run /var/tmp /run/nginx /var/lib/nginx && \
+    chgrp -R 0        /.composer /.config /var/log /var/run /var/tmp /run/nginx /var/lib/nginx && \
+    chmod -R g=u,a+rx /.composer /.config /var/log /var/run /var/tmp /run/nginx /var/lib/nginx && \
     # Log aggregation
     ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log && \
@@ -53,8 +53,8 @@ RUN composer install --no-scripts --no-autoloader --prefer-dist --no-dev --worki
 
 # Copy the app files
 COPY . /tmp/app
-RUN chmod -R g+w /tmp/app && \
-    chown -R 1001:0 /tmp/app && \
+RUN chgrp -R 0 /tmp/app && \
+    chmod -R g=u /tmp/app && \
     cp -a /tmp/app/. /var/www && \
     rm -rf /tmp/app && \
     composer dump-autoload --optimize && \

@@ -14,7 +14,7 @@ RUN apk update && \
     echo "${TZ}" > /etc/timezone && \
     # Install pm2
     npm install pm2 -g && \
-    mkdir /.pm2 && chmod -R g+w /.pm2 && chown 1001:0 /.pm2 && \
+    mkdir /.pm2 && chgrp -R 0 /.pm2 && chmod -R g=u /.pm2 && \
     # Clean up packages
     rm -rf /var/cache/apk/*
 
@@ -31,7 +31,9 @@ RUN npm install
 
 # Bundle app source
 COPY . /tmp/app
-RUN chmod -R g+w /tmp/app /.config && \
+
+RUN chgrp -R 0 /tmp/app /.config && \
+    chmod -R g=u /tmp/app /.config && \
     cp -a /tmp/app/. /usr/src/app && \
     rm -rf /tmp/app
 
