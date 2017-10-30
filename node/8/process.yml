@@ -1,4 +1,0 @@
-apps:
-  - script   : "./app.js"
-    name     : "app"
-    exec_mode: "fork"
