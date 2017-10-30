@@ -12,9 +12,6 @@ RUN apk update && \
     # Set the timezone
     cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo "${TZ}" > /etc/timezone && \
-    # Install pm2
-    npm install pm2 -g && \
-    mkdir /.pm2 && chmod -R g+w /.pm2 && chown 1001:0 /.pm2 && \
     # Clean up packages
     rm -rf /var/cache/apk/*
 
@@ -35,5 +32,7 @@ RUN chmod -R g+w /tmp/app /.config && \
     cp -a /tmp/app/. /usr/src/app && \
     rm -rf /tmp/app
 
-CMD ["pm2-docker", "start", "--auto-exit", "--env", "production", "process.yml"]
+# Set max_old_space_size to around 40Mi less than the amount of RAM for your deployment (default is 200Mi)
+# Set app.js to your starting file
+CMD ["node", "--optimize_for_size", "--max_old_space_size=160", "--gc_interval=100", "app.js"]
 USER 1001
