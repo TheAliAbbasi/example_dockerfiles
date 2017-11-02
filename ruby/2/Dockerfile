@@ -14,6 +14,8 @@ RUN apk update && \
     # Set the timezone
     cp /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo "${TZ}" > /etc/timezone && \
+    # Set the nginx config
+    sed -i "/user nginx;/c #user nginx;" /etc/nginx/nginx.conf && \
     # Setup permissions
     mkdir -p /run/nginx /var/lib/nginx/logs && \
     chgrp -R 0        /var/log /var/run /var/tmp /run/nginx /var/lib/nginx && \
