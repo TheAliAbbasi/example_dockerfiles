@@ -58,7 +58,7 @@ RUN chgrp -R 0 /tmp/app && \
     cp -a /tmp/app/. /var/www && \
     rm -rf /tmp/app && \
     composer dump-autoload --optimize && \
-    chmod +x /var/www/start.sh
+    chmod +x start.sh
 
 CMD ["./start.sh"]
 USER 1001
