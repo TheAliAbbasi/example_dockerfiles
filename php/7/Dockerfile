@@ -1,4 +1,4 @@
-# We use Alpine Linux as our base Docker image since it's only 5MB in size so
+# Use Alpine Linux as our base Docker image since it's only 5MB in size so
 # allows us to create smaller Docker images.
 FROM alpine:3.6
 
