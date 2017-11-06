@@ -47,9 +47,8 @@ RUN apk update && \
            /etc/php7/php-fpm.d/www.conf && \
     # Setup permissions for directories and files that will be written to at runtime.
     # These need to be group-writeable for the default Docker image's user.
-    # To do this, the folders are first created, their group is set to the root
-    # group, and the correct group permissions are added. For more information see the
-    # [OpenShift Origin documentation](https://docs.openshift.org/latest/creating_images/guidelines.html#use-uid).
+    # To do this, the folders are created, their group is set to the root
+    # group, and the correct group permissions are added.
     mkdir -p /.composer /.config /run/nginx /var/lib/nginx/logs && \
     chgrp -R 0        /.composer /.config /var/log /var/run /var/tmp \
                       /run/nginx /var/lib/nginx && \
@@ -97,6 +96,5 @@ RUN chgrp -R 0 /tmp/app && \
 # Specify the command to run when the container starts.
 CMD ["./start.sh"]
 
-# Specify the default user for the Docker image to run as. For more details
-# see the [OpenShift Origin documentation](https://docs.openshift.org/latest/creating_images/guidelines.html#use-uid)
+# Specify the default user for the Docker image to run as.
 USER 1001
