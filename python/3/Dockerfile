@@ -36,7 +36,7 @@ RUN apk update && \
     rm -rf /var/cache/apk/*
 
 # By default all ports are closed in the container. Here the nginx port is opened.
-# Other ports that need to be opened can be added here, separated by spaces.
+# Other ports that need to be opened can be added here (only ports above 1024), separated by spaces.
 EXPOSE 8080
 # Set the current directory for the Docker image.
 WORKDIR /usr/src/app
