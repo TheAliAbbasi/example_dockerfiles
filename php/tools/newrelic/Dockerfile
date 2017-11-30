@@ -15,7 +15,7 @@ RUN mkdir -p /var/log/newrelic /var/run/newrelic && \
     rm -f /tmp/.newrelic.sock && \
 
     # Enviroment variables `NEW_RELIC_LICENSE_KEY` and `NEW_RELIC_APP_NAME` are required when building Docker image,
-    # so you must set them in your **BuildConfig** Environments.
+    # so you must set them in your **BuildConfig** Environments. Change `php7` to `php5` if applicable.
     sed -i \
         -e "s/newrelic.license =.*/newrelic.license = ${NEW_RELIC_LICENSE_KEY}/" \
         -e "s/newrelic.appname =.*/newrelic.appname = ${NEW_RELIC_APP_NAME}/" \
