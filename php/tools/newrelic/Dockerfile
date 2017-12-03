@@ -14,11 +14,11 @@ RUN \
   cd /tmp && curl -sS "https://download.newrelic.com/php_agent/release/${NEWRELIC_VERSION}.tar.gz" | gzip -dc | tar xf - && \
   cd "${NEWRELIC_VERSION}" && \
   NR_INSTALL_SILENT=true ./newrelic-install install && \
-  rm -f /var/run/newrelic-daemon.pid && \
-  rm -f /tmp/.newrelic.sock && \
-  # `NEW_RELIC_LICENSE_KEY` and `NEW_RELIC_APP_NAME` are required at build time,
-  # so you must set them in your **BuildConfig** Environments.
+  # `NEW_RELIC_ENABLED`, `NEW_RELIC_LICENSE_KEY` and `NEW_RELIC_APP_NAME` are required at run time,
+  # so you must set them in your **Deployment** Environments.
+  export NEW_RELIC_ENABLED="false" && \
   sed -i \
-      -e "s/newrelic.license =.*/newrelic.license = ${NEW_RELIC_LICENSE_KEY}/" \
-      -e "s/newrelic.appname =.*/newrelic.appname = ${NEW_RELIC_APP_NAME}/" \
+      -e "s/newrelic.enabled =.*/newrelic.enabled = \${NEW_RELIC_ENABLED}/" \
+      -e "s/newrelic.license =.*/newrelic.license = \${NEW_RELIC_LICENSE_KEY}/" \
+      -e "s/newrelic.appname =.*/newrelic.appname = \${NEW_RELIC_APP_NAME}/" \
       $PHP_PATH/conf.d/newrelic.ini
