@@ -16,9 +16,8 @@ RUN \
   NR_INSTALL_SILENT=true ./newrelic-install install && \
   # `NEW_RELIC_ENABLED`, `NEW_RELIC_LICENSE_KEY` and `NEW_RELIC_APP_NAME` are required at run time,
   # so you must set them in your **Deployment** Environments.
-  export NEW_RELIC_ENABLED="false" && \
   sed -i \
-      -e "s/newrelic.enabled =.*/newrelic.enabled = \${NEW_RELIC_ENABLED}/" \
+      -e "s/;newrelic.enabled =.*/newrelic.enabled = \${NEW_RELIC_ENABLED}/" \
       -e "s/newrelic.license =.*/newrelic.license = \${NEW_RELIC_LICENSE_KEY}/" \
       -e "s/newrelic.appname =.*/newrelic.appname = \${NEW_RELIC_APP_NAME}/" \
       -e "s/;newrelic.feature_flag =.*/newrelic.feature_flag = \${NEW_RELIC_FEATURE_FLAG}/" \
