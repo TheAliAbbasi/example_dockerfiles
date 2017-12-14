@@ -12,7 +12,7 @@ FROM alpine:3.6
 # * `GOPATH` This should not need changed.
 # * `GOBIN` This should not need changed.
 ENV TZ=Asia/Tehran \
-    GO_SOURCE_PATH=$GOPATH/src/github.com/MY_ORG_HERE/MY_REPO_HERE \
+    GO_SOURCE_PATH=/gopath/src/github.com/MY_ORG_HERE/MY_REPO_HERE \
     GO_BINARY="MY_PROGRAM" \
     GO_ADDITIONAL_BINARIES="ANOTHER_BINARY_1 ANOTHER_BINARY_2" \
     GOROOT=/usr/lib/go \
@@ -43,17 +43,17 @@ RUN apk update && \
     # command you need for building the application.
     make build && \
     # Add the built binaries to the Go bin.
-    mv $GO_BINARY $GO_ADDITIONAL_BINARIES /gopath/bin && \
+    mv $GO_BINARY $GO_ADDITIONAL_BINARIES $GOBIN && \
     # Clean up the Go packages and build dependencies. This reduces the size of
     # the Docker image.
     /gopath/bin/glide cache-clear && \
     apk del .build-deps && \
-    rm -rf /gopath/pkg /gopath/src /gopath/bin/glide && \
+    rm -rf $GOPATH/pkg $GOPATH/src $GOBIN/glide && \
     rm -rf /var/cache/apk/*
 
 # Set the current directory for the Docker image to the Go bin path, since
 # we will now run the Go app.
-WORKDIR /gopath/bin
+WORKDIR $GOBIN
 
 # Specify the command to run when the container starts.
 CMD ["/gopath/bin/$GO_BINARY"]
