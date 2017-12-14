@@ -56,7 +56,7 @@ RUN apk update && \
 WORKDIR $GOBIN
 
 # Specify the command to run when the container starts.
-CMD ["/gopath/bin/$GO_BINARY"]
+CMD ${GOBIN}/${GO_BINARY}
 
 # Specify the default user for the Docker image to run as.
 USER 1001
