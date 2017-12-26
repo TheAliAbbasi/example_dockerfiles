@@ -1,7 +1,7 @@
 # Use the `ENTRYPOINT` DeploymentConfig environment variable to specify
 # which command to run. This enables the same Dockerfile to be used for
 # web and worker processes.
-#!/bin/bash
+#!/usr/bin/env bash
 
 # If the entrypoint is `workers`, run the node worker.
 if [ "$ENTRYPOINT" = "workers" ]

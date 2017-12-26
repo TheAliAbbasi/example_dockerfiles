@@ -2,7 +2,7 @@
 # which command to run. This enables the same Dockerfile to be used for
 # web and worker processes. This script contains the basics for a standard
 # Laravel app but it can be customized to add other entrypoints.
-#!/bin/bash
+#!/usr/bin/env bash
 
 # If the entrypoint is `workers`, run the Laravel worker.
 if [ "$ENTRYPOINT" = "workers" ]; then

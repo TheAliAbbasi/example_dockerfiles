@@ -3,7 +3,7 @@
 # web and worker processes. This script contains the basics for a standard
 # python app with celery workers but it can be customized to add other
 # entrypoints.
-#!/bin/bash
+#!/usr/bin/env bash
 
 # If the entrypoint is `workers`, run the celery worker.
 if [ "$ENTRYPOINT" = "workers" ]

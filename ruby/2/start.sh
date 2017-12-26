@@ -3,7 +3,7 @@
 # web and worker processes. This script contains the basics for a standard
 # Rails app with sidekiq workers but it can be customized to add other
 # entrypoints.
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Prefix `bundle` with `exec` so unicorn shuts down gracefully on SIGTERM (i.e. `docker stop`)
 if [ "$ENTRYPOINT" = "workers" ]
